@@ -31,7 +31,12 @@ const UsersCrud = () => {
 
   const fetchUsuarios = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/usuarios');
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/api/usuarios', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!res.ok) throw new Error('Falha ao carregar usuários');
       const data = await res.json();
       setUsuarios(data);
@@ -99,42 +104,33 @@ const UsersCrud = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Só verifica se for novo usuário ou se email/cpf mudou
+      if (!editingUser || formValues.email !== editingUser.email || formValues.cpf !== editingUser.cpf) {
+        const checkRes = await fetch('http://localhost:3000/api/usuarios/verificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: formValues.email, cpf: formValues.cpf }),
+        });
+        const checkData = await checkRes.json();
+        if (checkData.exists) {
+          alert('E-mail ou CPF já cadastrado.');
+          return;
+        }
+      }
       let res;
       if (editingUser) {
         // Atualizar usuário
         res = await fetch(`http://localhost:3000/api/usuarios/${editingUser.id}`, {
           method: 'PUT',
-          body: JSON.stringify({
-            nome: formValues.nome,
-            email: formValues.email,
-            senha: formValues.senha,
-            endereco: formValues.endereco,
-            cidade: formValues.cidade,
-            estado: formValues.estado,
-            data_nascimento: formValues.data_nascimento,
-            cpf: formValues.cpf,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          body: JSON.stringify(formValues),
+          headers: { 'Content-Type': 'application/json' },
         });
       } else {
         // Criar novo usuário
         res = await fetch('http://localhost:3000/api/usuarios', {
           method: 'POST',
-          body: JSON.stringify({
-            nome: formValues.nome,
-            email: formValues.email,
-            senha: formValues.senha,
-            endereco: formValues.endereco,
-            cidade: formValues.cidade,
-            estado: formValues.estado,
-            data_nascimento: formValues.data_nascimento,
-            cpf: formValues.cpf,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          body: JSON.stringify(formValues),
+          headers: { 'Content-Type': 'application/json' },
         });
       }
       if (!res.ok) throw new Error('Erro ao enviar dados');

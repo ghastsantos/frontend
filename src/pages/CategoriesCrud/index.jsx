@@ -21,7 +21,12 @@ const CategoriesCrud = () => {
 
   const fetchCategorias = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/categorias');
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/api/categorias', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!res.ok) throw new Error('Falha ao carregar categorias');
       const data = await res.json();
       setCategorias(data);

@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { PageWrapper, ProductsGridWrapper } from './styles';
 import ProductCard from '../../componets/ProductCard';
+import { useCart } from '../../Contexts/CartContext';
 
 const CAMISAS_CATEGORIA_ID = 1; // Troque pelo ID real de "Camisas"
 
 const CamisasFemininas = () => {
   const [products, setProducts] = useState([]);
+  const { updateCartCount } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const res = await fetch('http://localhost:3000/api/produtos');
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/api/produtos', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await res.json();
       setProducts(
         data.filter(
@@ -32,7 +39,7 @@ const CamisasFemininas = () => {
       cart.push({ ...product, quantity: 1 });
     }
     localStorage.setItem('cart', JSON.stringify(cart));
-    alert('Produto adicionado ao carrinho!');
+    updateCartCount(); // Atualiza a bolinha!
   };
 
   return (

@@ -32,7 +32,12 @@ const ProductsCrud = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/produtos');
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/api/produtos', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!res.ok) throw new Error('Falha ao carregar produtos');
       const data = await res.json();
       setProducts(data);
@@ -43,7 +48,12 @@ const ProductsCrud = () => {
 
   const fetchCategorias = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/categorias');
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/api/categorias', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!res.ok) throw new Error('Falha ao carregar categorias');
       const data = await res.json();
       setCategorias(data);
@@ -131,7 +141,7 @@ const ProductsCrud = () => {
             ano: formValues.ano,
             ativo: formValues.ativo,
             genero: formValues.genero,
-            categorias: selectedCategorias,
+            categorias: JSON.stringify(selectedCategorias),
           }),
         });
         if (!res.ok) throw new Error('Erro ao atualizar produto');

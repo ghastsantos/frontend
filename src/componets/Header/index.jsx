@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'; // Usar NavLink para links de menu ativos
 import Button from '../Button'; // Importa nosso componente Button
 import { MdShoppingCart, MdPerson, MdSearch } from 'react-icons/md';
+import { useCart } from '../../Contexts/CartContext';
 
 // Importando os componentes estilizados
 import {
@@ -20,6 +21,7 @@ import logoImg from '../../assets/logo.png';
 
 const Header = () => {
   const navigate = useNavigate();
+  const { cartCount } = useCart();
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -54,6 +56,21 @@ const Header = () => {
         <IconsContainer>
           <Button iconButton onClick={() => navigate('/carrinho')} aria-label="Carrinho">
             <MdShoppingCart size={32} />
+            {cartCount > 0 && (
+              <span style={{
+                background: 'red',
+                color: 'white',
+                borderRadius: '50%',
+                fontSize: 12,
+                width: 18,
+                height: 18,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {cartCount}
+              </span>
+            )}
           </Button>
           <Button iconButton onClick={() => navigate('/perfil')} aria-label="Perfil do usuário">
             <MdPerson size={32} />

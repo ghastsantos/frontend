@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import Button from '../../componets/Button';
+import { useCart } from '../../Contexts/CartContext';
 import {
   CartWrapper,
   Total,
@@ -21,6 +22,7 @@ const Cart = () => {
   const location = useLocation();
   const isFirstLoad = useRef(true);
   const [formErrors, setFormErrors] = useState({});
+  const { updateCartCount } = useCart();
 
   useEffect(() => {
     const loadCart = () => {
@@ -48,10 +50,12 @@ const Cart = () => {
           : item
       )
     );
+    setTimeout(updateCartCount, 0); // Garante atualização após o setCart
   };
 
   const removeItem = (id) => {
     setCart(prev => prev.filter(item => item.id !== id));
+    setTimeout(updateCartCount, 0);
   };
 
   const total = cart.reduce((sum, item) => sum + Number(item.preco) * item.quantity, 0);
@@ -74,6 +78,7 @@ const Cart = () => {
     setCheckoutSuccess(true);
     localStorage.removeItem('cart');
     setCart([]);
+    updateCartCount();
   };
 
   if (cart.length === 0) {

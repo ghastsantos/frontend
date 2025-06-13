@@ -30,12 +30,35 @@ const SignUp = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError('');
-    // Validação simples
-    if (!form.nome || !form.email || !form.senha) {
-      setError('Preencha nome, email e senha.');
+    // Verificação: todos os campos obrigatórios devem estar preenchidos
+    const camposObrigatorios = [
+      'nome',
+      'email',
+      'senha',
+      'endereco',
+      'cidade',
+      'estado',
+      'data_nascimento',
+      'cpf'
+    ];
+    const algumVazio = camposObrigatorios.some(campo => !form[campo]?.trim());
+    if (algumVazio) {
+      setError('Preencha todos os campos para criar sua conta.');
       return;
     }
+    // Verificação de email/cpf
     try {
+      const checkRes = await fetch('http://localhost:3000/api/usuarios/verificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email, cpf: form.cpf }),
+      });
+      const checkData = await checkRes.json();
+      if (checkData.exists) {
+        setError('E-mail ou CPF já cadastrado.');
+        return;
+      }
+      // Cadastro normal
       const res = await fetch('http://localhost:3000/api/usuarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -44,7 +67,7 @@ const SignUp = () => {
       const data = await res.json();
       if (data && data.id) {
         localStorage.setItem('id', data.id);
-        navigate('/perfil');
+        navigate('/');
       } else {
         setError(data.error || 'Erro ao cadastrar. Tente outro e-mail.');
       }

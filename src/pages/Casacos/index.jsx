@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { PageWrapper, ProductsGridWrapper } from './styles';
 import ProductCard from '../../componets/ProductCard';
+import { useCart } from '../../Contexts/CartContext';
 
 const CASACOS_CATEGORIA_ID = 3; // Troque pelo ID real da categoria "Casacos" no seu banco
 
 const Casacos = () => {
   const [products, setProducts] = useState([]);
+  const { updateCartCount } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const res = await fetch('http://localhost:3000/api/produtos');
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/api/produtos', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await res.json();
       // Supondo que cada produto tem um array de categorias (ex: [1,3])
       setProducts(data.filter(p => Array.isArray(p.categorias) && p.categorias.includes(CASACOS_CATEGORIA_ID)));
@@ -26,7 +33,7 @@ const Casacos = () => {
       cart.push({ ...product, quantity: 1 });
     }
     localStorage.setItem('cart', JSON.stringify(cart));
-    alert('Produto adicionado ao carrinho!');
+    updateCartCount(); // Atualiza a bolinha!
   };
 
   return (

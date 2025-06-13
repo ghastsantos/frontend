@@ -32,10 +32,11 @@ const Login = () => {
         body: JSON.stringify(form),
       });
       const data = await res.json();
-      console.log(data); // Veja o que chega aqui
-      if (data && data.id) {
+      console.log(data);
+      if (data && data.token) {
+        localStorage.setItem('token', data.token);
         localStorage.setItem('id', data.id);
-        navigate('/perfil');
+        navigate('/');
       } else {
         setError('E-mail ou senha inválidos.');
       }

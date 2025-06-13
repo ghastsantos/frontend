@@ -16,6 +16,7 @@ import Casacos from './pages/Casacos';
 import CategoriesCrud from './pages/CategoriesCrud';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { CartProvider } from './Contexts/CartContext';
 
 // Função para verificar se o usuário está autenticado (exemplo)
 const isAuthenticated = () => {
@@ -53,59 +54,61 @@ const Layout = () => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/camisas-masculinas" element={<CamisasMasculinas />} />
-          <Route path="/camisas-femininas" element={<CamisasFemininas />} />
-          <Route path="/regatas" element={<Regatas />} />
-          <Route path="/casacos" element={<Casacos />} />
-          <Route
-            path="/produtos"
-            element={
-              <AdminRoute>
-                <ProductsCrud />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/usuarios"
-            element={
-              <AdminRoute>
-                <UsersCrud />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/categorias"
-            element={
-              <AdminRoute>
-                <CategoriesCrud />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/carrinho"
-            element={
-              <ProtectedRoute>
-                <Cart />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/perfil"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-        </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/cadastro" element={<SignUp />} />
-      </Routes>
-    </Router>
+    <CartProvider>
+      <Router>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/camisas-masculinas" element={<CamisasMasculinas />} />
+            <Route path="/camisas-femininas" element={<CamisasFemininas />} />
+            <Route path="/regatas" element={<Regatas />} />
+            <Route path="/casacos" element={<Casacos />} />
+            <Route
+              path="/produtos"
+              element={
+                <AdminRoute>
+                  <ProductsCrud />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/usuarios"
+              element={
+                <AdminRoute>
+                  <UsersCrud />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/categorias"
+              element={
+                <AdminRoute>
+                  <CategoriesCrud />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/carrinho"
+              element={
+                <ProtectedRoute>
+                  <Cart />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/perfil"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+          <Route path="/login" element={<Login />} />
+          <Route path="/cadastro" element={<SignUp />} />
+        </Routes>
+      </Router>
+    </CartProvider>
   );
 }
 

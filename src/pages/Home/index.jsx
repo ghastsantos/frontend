@@ -5,21 +5,27 @@ import ImageCarousel from '../../componets/ImageCarousel';
 import Button from '../../componets/Button';
 import DiscountCarousel from '../../componets/DiscountCarousel/index.jsx';
 import { useNavigate } from 'react-router-dom';
-// import { useCart } from '../contexts/CartContext'; // Se você tiver um contexto de carrinho
+import { useCart } from '../../Contexts/CartContext';
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+  const { updateCartCount } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         // Certifique-se que seu backend está rodando na porta 3000
-        const response = await fetch('http://localhost:3000/api/produtos');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:3000/api/produtos', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
         }
-        const data = await response.json();
+        const data = await res.json();
         // Exemplo: pegar os 10 primeiros produtos ou os mais recentes
         setProducts(data.slice(0, 10));
       } catch (error) {
@@ -31,17 +37,17 @@ const HomePage = () => {
   }, []);
 
   const handleAddToCart = (product) => {
-  console.log('Produto adicionado:', product);
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const index = cart.findIndex(item => item.id === product.id);
-  if (index !== -1) {
-    cart[index].quantity += 1;
-  } else {
-    cart.push({ ...product, quantity: 1 });
-  }
-  localStorage.setItem('cart', JSON.stringify(cart));
-  alert('Produto adicionado ao carrinho!');
-};
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const index = cart.findIndex(item => item.id === product.id);
+    if (index !== -1) {
+      cart[index].quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount(); // Atualiza a bolinha!
+    // Se quiser, pode mostrar um toast ou snackbar aqui
+  };
 
   // Imagens para o carrossel (certifique-se que estão na pasta public/images)
   const carouselImages = [

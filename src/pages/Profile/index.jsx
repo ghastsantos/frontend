@@ -17,7 +17,12 @@ const Profile = () => {
       navigate('/login');
       return;
     }
-    fetch(`http://localhost:3000/api/usuarios/${userId}`)
+    const token = localStorage.getItem('token');
+    fetch(`http://localhost:3000/api/usuarios/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(data => {
         setUser(data);
@@ -35,13 +40,20 @@ const Profile = () => {
     e.preventDefault();
     setError('');
     try {
+      // Corrige o formato da data
+      const formToSend = {
+        ...form,
+        data_nascimento: form.data_nascimento
+          ? form.data_nascimento.split('T')[0]
+          : ''
+      };
       const res = await fetch(`http://localhost:3000/api/usuarios/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(formToSend),
       });
       if (!res.ok) throw new Error('Erro ao atualizar perfil');
-      setUser(form);
+      setUser(formToSend);
       setEditMode(false);
     } catch (err) {
       setError('Erro ao salvar alterações.');
